@@ -1,0 +1,111 @@
+- name: "Remove password expiry for root user"
+  shell: chage -I -1 -m 0 -M 99999 -E -1 root
+  become: yes
+
+- name: "Display information about phsyical volumes"
+  shell: pvs
+  register: pvs
+  become: yes
+- debug: msg={{ pvs.stdout }}
+
+- name: Set logical volume sizes 
+  lvol:
+    vg: starbucks
+    lv: "{{ item.name }}"
+    size: "{{ item.size }}"
+    pvs: /dev/sda2,/dev/sda3
+    resizefs: yes
+  with_items: "{{ logical_volumes }}"
+  become: yes
+  ignore_errors: yes
+
+- name: "Display information about phsyical volumes"
+  shell: pvs
+  register: pvs
+  become: yes
+- debug: msg={{ pvs.stdout }}
+
+- name: "Display information about logical volumes"
+  shell: lvs
+  register: lvs
+  become: yes
+- debug: msg={{ lvs.stdout }}
+
+- name: "Install apt packages"
+  apt:
+    name: "{{ apt_packages }}"
+    state: present
+    autoclean: yes
+    update_cache: yes
+  become: yes
+
+- name: "Rebuild Trusted certificate store"
+  command: update-ca-certificates --fresh
+  become: yes
+
+# https://gist.github.com/tomdaley92/dd47cc1c26c58b2d2e5cf6ec56a2c4c7
+- name: "Install rsub (remote sublime)"
+  shell:  "wget -O /usr/local/bin/rsub https://raw.github.com/aurora/rmate/master/rmate"
+  args:
+    warn: no
+  become: yes
+
+- name: "Set rsub file permissions"
+  shell: "chmod a+rx /usr/local/bin/rsub"
+  args:
+    warn: no
+  become: yes
+
+- name: Getting process IDs of ctop
+  shell: ps -C ctop -o pid=
+  register: ctop_pids
+  ignore_errors: yes
+
+- name: Printing the process IDs obtained
+  debug:
+    msg: "PIDS:{{ ctop_pids.stdout }}"
+  when: ctop_pids.rc == 0
+
+- name: Kill all ctop processes
+  shell: kill {{ item }}
+  when: ctop_pids.rc == 0
+  with_items: "{{ ctop_pids.stdout.split('\n') | list }}"
+
+# https://github.com/bcicen/ctop
+- name: "Install ctop (top command, for containers)"
+  shell: "wget -O /usr/local/bin/ctop https://github.com/bcicen/ctop/releases/download/v0.7.3/ctop-0.7.3-linux-amd64"
+  args:
+    warn: no
+  become: yes
+
+- name: "Set ctop file permissions"
+  shell: "chmod a+rx /usr/local/bin/ctop"
+  args:
+    warn: no
+  become: yes
+
+# Fixes the potential issue "Docker warning: IPv4 forwarding is disabled. Networking will not work"
+# https://stackoverflow.com/questions/41453263/docker-networking-disabled-warning-ipv4-forwarding-is-disabled-networking-wil
+- sysctl:
+    name: net.ipv4.ip_forward
+    value: '1'
+    sysctl_set: yes
+    state: present
+    reload: yes
+  become: yes
+  ignore_errors: yes
+
+- name: Allow port 80
+  ufw:
+    rule: allow
+    port: 80
+    proto: any
+  become: yes
+
+- name: Allow port 443
+  ufw:
+    rule: allow
+    port: 443
+    proto: any
+  become: yes
+
