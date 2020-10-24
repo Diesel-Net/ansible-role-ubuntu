@@ -2,35 +2,6 @@
   shell: chage -I -1 -m 0 -M 99999 -E -1 root
   become: yes
 
-- name: "Display information about phsyical volumes"
-  shell: pvs
-  register: pvs
-  become: yes
-- debug: msg={{ pvs.stdout }}
-
-- name: Set logical volume sizes 
-  lvol:
-    vg: starbucks
-    lv: "{{ item.name }}"
-    size: "{{ item.size }}"
-    pvs: /dev/sda2,/dev/sda3
-    resizefs: yes
-  with_items: "{{ logical_volumes }}"
-  become: yes
-  ignore_errors: yes
-
-- name: "Display information about phsyical volumes"
-  shell: pvs
-  register: pvs
-  become: yes
-- debug: msg={{ pvs.stdout }}
-
-- name: "Display information about logical volumes"
-  shell: lvs
-  register: lvs
-  become: yes
-- debug: msg={{ lvs.stdout }}
-
 - name: "Install apt packages"
   apt:
     name: "{{ apt_packages }}"
