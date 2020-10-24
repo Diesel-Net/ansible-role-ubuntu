@@ -30,7 +30,7 @@
 - name: Getting process IDs of ctop
   shell: ps -C ctop -o pid=
   register: ctop_pids
-  ignore_errors: yes
+  failed_when: ctop_pids.rc > 1
 
 - name: Printing the process IDs obtained
   debug:
