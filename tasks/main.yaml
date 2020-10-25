@@ -2,35 +2,6 @@
   shell: chage -I -1 -m 0 -M 99999 -E -1 root
   become: yes
 
-- name: "Display information about phsyical volumes"
-  shell: pvs
-  register: pvs
-  become: yes
-- debug: msg={{ pvs.stdout }}
-
-- name: Set logical volume sizes 
-  lvol:
-    vg: starbucks
-    lv: "{{ item.name }}"
-    size: "{{ item.size }}"
-    pvs: /dev/sda2,/dev/sda3
-    resizefs: yes
-  with_items: "{{ logical_volumes }}"
-  become: yes
-  ignore_errors: yes
-
-- name: "Display information about phsyical volumes"
-  shell: pvs
-  register: pvs
-  become: yes
-- debug: msg={{ pvs.stdout }}
-
-- name: "Display information about logical volumes"
-  shell: lvs
-  register: lvs
-  become: yes
-- debug: msg={{ lvs.stdout }}
-
 - name: "Install apt packages"
   apt:
     name: "{{ apt_packages }}"
@@ -59,7 +30,7 @@
 - name: Getting process IDs of ctop
   shell: ps -C ctop -o pid=
   register: ctop_pids
-  ignore_errors: yes
+  failed_when: ctop_pids.rc > 1
 
 - name: Printing the process IDs obtained
   debug:
@@ -98,14 +69,14 @@
 - name: Allow port 80
   ufw:
     rule: allow
-    port: 80
+    port: '80'
     proto: any
   become: yes
 
 - name: Allow port 443
   ufw:
     rule: allow
-    port: 443
+    port: '443'
     proto: any
   become: yes
 

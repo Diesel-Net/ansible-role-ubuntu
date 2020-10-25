@@ -1,19 +1,10 @@
 apt_packages:
+  - qemu-guest-agent
   - python3-pip
   - python3-venv
   - tree
   - wget
   - curl
-  - jq
   - dnsutils
   - ca-certificates
-  - mysql-client
-  - postgresql-client
-
-logical_volumes:
-  - name: lv_home
-    size: 20g
-  - name: lv_var
-    size: 20g
-  - name: lv_var_log
-    size: 20g
+  - mongodb-clients
