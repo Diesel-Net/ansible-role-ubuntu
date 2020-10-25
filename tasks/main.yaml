@@ -69,14 +69,14 @@
 - name: Allow port 80
   ufw:
     rule: allow
-    port: 80
+    port: '80'
     proto: any
   become: yes
 
 - name: Allow port 443
   ufw:
     rule: allow
-    port: 443
+    port: '443'
     proto: any
   become: yes
 
