@@ -1,2 +1,2 @@
-# ansible-role-ubuntu-base
-Configuring a fresh Ubuntu 18 LTS Virtual Machine
+# ansible-role-ubuntu
+Configuring a fresh Ubuntu 18.04 LTS Virtual Machine
