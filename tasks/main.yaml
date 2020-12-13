@@ -91,3 +91,4 @@
   ufw:
     state: enabled
     policy: deny
+  become: yes
