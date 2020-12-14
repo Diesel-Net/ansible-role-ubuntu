@@ -1,3 +1,0 @@
-# automation user's home directory
-home: "/home/automation"
-app_data: "{{ home }}/.occ"

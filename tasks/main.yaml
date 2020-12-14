@@ -66,17 +66,22 @@
   become: yes
   ignore_errors: yes
 
-- name: Allow port 80
+- name: Allow port 80 (HTTP)
   ufw:
     rule: allow
     port: '80'
     proto: any
   become: yes
 
-- name: Allow port 443
+- name: Allow port 443 (HTTPS)
   ufw:
     rule: allow
     port: '443'
     proto: any
   become: yes
 
+- name: Reload Firewall and enable at boot
+  ufw:
+    state: enabled
+    policy: deny
+  become: yes
