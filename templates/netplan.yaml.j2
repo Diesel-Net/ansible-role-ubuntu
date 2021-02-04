@@ -9,4 +9,4 @@ network:
         {{ ip_addresses | to_nice_yaml | indent(8, false) }}
       nameservers:
         addresses:
-          {{ ip_addresses | to_nice_yaml | indent(10, false) }}
+          {{ nameservers | to_nice_yaml | indent(10, false) }}
