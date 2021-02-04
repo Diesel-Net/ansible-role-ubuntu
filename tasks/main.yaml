@@ -66,6 +66,13 @@
   become: yes
   ignore_errors: yes
 
+- name: Allow port 22 (SSH)
+  ufw:
+    rule: allow
+    port: '22'
+    proto: any
+  become: yes
+
 - name: Allow port 80 (HTTP)
   ufw:
     rule: allow
