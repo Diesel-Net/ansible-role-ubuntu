@@ -3,12 +3,10 @@ network:
   version: 2
   ethernets:
     ens18:
-      dhcp4: false
+      dhcp4: {{ dhcp4 }}
+      gateway4: {{ gateway4 }}
       addresses:
         {{ ip_addresses | to_nice_yaml | indent(8, false) }}
-        
-      gateway4: 192.168.50.1
       nameservers:
         addresses:
-          - 192.168.50.25
-          - 192.168.50.1
+          {{ ip_addresses | to_nice_yaml | indent(10, false) }}

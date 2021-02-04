@@ -104,7 +104,7 @@
     --install -f
   become: yes
 
-- name: Configure static ip address
+- name: Configure netplan
   template:
     src: netplan.yaml.j2
     dest: /etc/netplan/00-installer-config.yaml
@@ -112,10 +112,10 @@
     group: root
     mode: 0644
   become: yes
-  when: ip_addresses is defined
+  when: dhcp is false
 
-- name: Apply static ip address
+- name: Apply netplan
   shell: netplan apply
   become: yes
-  when: ip_addresses is defined
+  when: dhcp is false
 
