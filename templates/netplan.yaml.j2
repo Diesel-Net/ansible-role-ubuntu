@@ -3,7 +3,7 @@ network:
   version: 2
   ethernets:
     ens18:
-      dhcp4: {{ dhcp4 | default(true, true) }}
+      dhcp4: {{ dhcp4 | default('true') }}
 {% if gateway4 is defined %}
       gateway4: {{ gateway4 }}
 {% endif %}
