@@ -97,13 +97,7 @@
     deb: step-cli.deb
   become: yes
 
-- name: Remove step-cli.deb
-  file: 
-    path: step-cli.deb
-    state: absent
-  become: yes
-
-- name: Bootstrap the trust chain (installing Diesel-Net Root CA)
+- name: Bootstrap the trust chain (installs Diesel-Net Root CA)
   shell: >
     step ca bootstrap --ca-url https://ca.diesel.net \
     --fingerprint c4dfdfdece152139fe58280eebaa142ef25b0a19f0984ca5e5338d0d8522f7d8 \
