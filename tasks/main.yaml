@@ -112,10 +112,10 @@
     group: root
     mode: 0644
   become: yes
-  when: dhcp is false
+  when: not dhcp
 
 - name: Apply netplan
   shell: netplan apply
   become: yes
-  when: dhcp is false
+  when: not dhcp
 
