@@ -111,10 +111,14 @@
     --install -f
   become: yes
 
+- name: Remove all other netplan configurations
+  shell: rm -rf /etc/netplan/*
+  become: yes
+
 - name: Configure netplan
   template:
     src: netplan.yaml.j2
-    dest: /etc/netplan/00-installer-config.yaml
+    dest: /etc/netplan/automation-config.yaml
     owner: root
     group: root
     mode: 0644
