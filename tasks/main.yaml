@@ -103,3 +103,19 @@
     --fingerprint c4dfdfdece152139fe58280eebaa142ef25b0a19f0984ca5e5338d0d8522f7d8 \
     --install -f
   become: yes
+
+- name: Configure static ip address
+  template:
+    src: netplan.yaml.j2
+    dest: /etc/netplan/00-installer-config.yaml
+    owner: root
+    group: root
+    mode: 0644
+  become: yes
+  when: ip_addresses is defined
+
+- name: Apply static ip address
+  shell: netplan apply
+  become: yes
+  when: ip_addresses is defined
+
