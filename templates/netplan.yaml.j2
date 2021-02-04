@@ -1,0 +1,18 @@
+# This is the network config written by 'subiquity'
+network:
+  version: 2
+  ethernets:
+    ens18:
+      dhcp4: {{ dhcp4 | default(true, true) }}
+{% if gateway4 is defined %}
+      gateway4: {{ gateway4 }}
+{% endif %}
+{% if ip_addresses is defined %}
+      addresses:
+        {{ ip_addresses | to_nice_yaml | indent(8, false) }}
+{% endif %}
+{% if nameservers is defined %}
+      nameservers:
+        addresses:
+          {{ nameservers | to_nice_yaml | indent(10, false) }}
+{% endif %}
