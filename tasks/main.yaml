@@ -66,33 +66,6 @@
   become: yes
   ignore_errors: yes
 
-- name: Allow port 22 (SSH)
-  ufw:
-    rule: allow
-    port: '22'
-    proto: any
-  become: yes
-
-- name: Allow port 80 (HTTP)
-  ufw:
-    rule: allow
-    port: '80'
-    proto: any
-  become: yes
-
-- name: Allow port 443 (HTTPS)
-  ufw:
-    rule: allow
-    port: '443'
-    proto: any
-  become: yes
-
-- name: Reload Firewall and enable at boot
-  ufw:
-    state: enabled
-    policy: deny
-  become: yes
-
 - name: Download step-cli
   get_url:
     url: 'https://github.com/smallstep/cli/releases/download/v0.15.2/step-cli_0.15.2_amd64.deb'
