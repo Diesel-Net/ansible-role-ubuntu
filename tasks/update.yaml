@@ -4,12 +4,15 @@
     upgrade: safe
   become: yes
 
-- block:
+- name: Check to see if restart is required (to apply kernel updates)
+  stat:
+    path: /var/run/reboot-required
+  register: reboot_required
 
-    - name: Check to see if restart is required (kernel updates)
-      stat:
-        path: /var/run/reboot-required
-      register: reboot_required
+- debug:
+    msg: 'reboot required: {{ reboot_required.stat.exists }}'
+
+- block:
 
     - name: Reboot the system
       shell: sleep 5 && reboot
