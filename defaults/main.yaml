@@ -1,3 +1,4 @@
 # safe/sane defaults
 
 auto_reboots: no
+timezone: America/Los_Angeles
