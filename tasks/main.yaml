@@ -54,13 +54,6 @@
       with_items: "{{ ctop_pids.stdout.split('\n') | list }}"
       become: yes
 
-    # https://github.com/bcicen/ctop
-    - name: Install ctop (top command, for containers)
-      shell: "wget -O /usr/local/bin/ctop https://github.com/bcicen/ctop/releases/download/v0.7.5/ctop-0.7.5-linux-amd64"
-      args:
-        warn: no
-      become: yes
-
     - name: Download ctop
       get_url:
         url: https://github.com/bcicen/ctop/releases/download/v0.7.5/ctop-0.7.5-linux-amd64 
@@ -75,6 +68,61 @@
         mode: 'u=rwx,,g=rx,o=rx'
       become: yes
 
+- name: Install step (PKI/ACME client for private/internal CA)
+  block:
+    - name: Create temp dir
+      tempfile:
+        state: directory
+        suffix: temp
+      register: temp_dir
+
+    - name: Download step-cli
+      get_url:
+        url: 'https://github.com/smallstep/cli/releases/download/v0.15.2/step-cli_0.15.2_amd64.deb'
+        dest: '{{ temp_dir.path }}/step-cli.deb'
+        mode: 'u+rwx'
+
+    - name: Install step-cli
+      apt:
+        deb: '{{ temp_dir.path }}/step-cli.deb'
+      become: yes
+
+    - name: Remove temp dir
+      file:
+        path: "{{ temp_dir.path }}"
+        state: absent
+      when: temp_dir.path is defined
+
+- name: Bootstrap the trust chain (installs Diesel-Net Root CA)
+  shell: >
+    step ca bootstrap --ca-url https://ca.diesel.net \
+    --fingerprint c4dfdfdece152139fe58280eebaa142ef25b0a19f0984ca5e5338d0d8522f7d8 \
+    --install -f
+  become: yes
+
+- name: Configuring static IP Address from host vars
+  block:
+    - name: Remove all other netplan configurations
+      shell: rm -rf /etc/netplan/*
+      args:
+        warn: no
+      become: yes
+
+    - name: Configure netplan
+      template:
+        src: netplan.yaml.j2
+        dest: /etc/netplan/automation-config.yaml
+        owner: root
+        group: root
+        mode: 0644
+      become: yes
+
+    - name: Apply netplan
+      shell: netplan apply
+      args:
+        warn: no
+      become: yes
+
 # Fixes the potential issue "Docker warning: IPv4 forwarding is disabled. Networking will not work"
 # https://stackoverflow.com/questions/41453263/docker-networking-disabled-warning-ipv4-forwarding-is-disabled-networking-wil
 - sysctl:
@@ -85,40 +133,3 @@
     reload: yes
   become: yes
   ignore_errors: yes
-
-- name: Download step-cli
-  get_url:
-    url: 'https://github.com/smallstep/cli/releases/download/v0.15.2/step-cli_0.15.2_amd64.deb'
-    dest: '~/step-cli.deb'
-    mode: 'u+rwx'
-
-- name: Install step-cli
-  apt:
-    deb: step-cli.deb
-  become: yes
-
-- name: Bootstrap the trust chain (installs Diesel-Net Root CA)
-  shell: >
-    step ca bootstrap --ca-url https://ca.diesel.net \
-    --fingerprint c4dfdfdece152139fe58280eebaa142ef25b0a19f0984ca5e5338d0d8522f7d8 \
-    --install -f
-  become: yes
-
-- name: Remove all other netplan configurations
-  shell: rm -rf /etc/netplan/*
-  become: yes
-
-- name: Configure netplan
-  template:
-    src: netplan.yaml.j2
-    dest: /etc/netplan/automation-config.yaml
-    owner: root
-    group: root
-    mode: 0644
-  become: yes
-
-- name: Apply netplan
-  shell: netplan apply
-  args:
-    warn: no
-  become: yes
