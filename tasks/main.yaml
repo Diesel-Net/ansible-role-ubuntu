@@ -2,11 +2,11 @@
   shell: timedatectl set-timezone {{ timezone }}
   become: yes
 
-- name: "Remove password expiry for root user"
+- name: Remove password expiry for root user
   shell: chage -I -1 -m 0 -M 99999 -E -1 root
   become: yes
 
-- name: "Install apt packages"
+- name: Install apt packages
   apt:
     name: "{{ apt_packages }}"
     state: present
@@ -14,50 +14,80 @@
     update_cache: yes
   become: yes
 
-- name: "Rebuild Trusted certificate store"
+- name: Rebuild Trusted certificate store
   command: update-ca-certificates --fresh
   become: yes
 
-# https://gist.github.com/tomdaley92/dd47cc1c26c58b2d2e5cf6ec56a2c4c7
-- name: "Install rsub (remote sublime)"
-  shell:  "wget -O /usr/local/bin/rsub https://raw.github.com/aurora/rmate/master/rmate"
-  args:
-    warn: no
+- name: Install Remote Sublime (rsub)
+  block:
+    - name: "Download rmate (rsub)"
+      get_url:
+        url: https://raw.github.com/aurora/rmate/master/rmate
+        dest: /usr/local/bin/rsub
+      become: yes
+
+    - name: "Set rsub file permissions"
+      file:
+        path: /usr/local/bin/rsub
+        owner: root
+        group: root
+        mode: 'u=rwx,,g=rx,o=rx'
+      become: yes
+
+- name: Install step (PKI/ACME client for private/internal CA)
+  block:
+    - name: Create temp dir
+      tempfile:
+        state: directory
+        suffix: temp
+      register: temp_dir
+
+    - name: Download step-cli
+      get_url:
+        url: 'https://github.com/smallstep/cli/releases/download/v0.15.2/step-cli_0.15.2_amd64.deb'
+        dest: '{{ temp_dir.path }}/step-cli.deb'
+        mode: 'u+rwx'
+
+    - name: Install step-cli
+      apt:
+        deb: '{{ temp_dir.path }}/step-cli.deb'
+      become: yes
+
+    - name: Remove temp dir
+      file:
+        path: "{{ temp_dir.path }}"
+        state: absent
+      when: temp_dir.path is defined
+
+- name: Bootstrap the trust chain (installs Diesel-Net Root CA)
+  shell: >
+    step ca bootstrap --ca-url https://ca.diesel.net \
+    --fingerprint c4dfdfdece152139fe58280eebaa142ef25b0a19f0984ca5e5338d0d8522f7d8 \
+    --install -f
   become: yes
 
-- name: "Set rsub file permissions"
-  shell: "chmod a+rx /usr/local/bin/rsub"
-  args:
-    warn: no
-  become: yes
+- name: Configuring static IP Address from host vars
+  block:
+    - name: Remove all other netplan configurations
+      shell: rm -rf /etc/netplan/*
+      args:
+        warn: no
+      become: yes
 
-- name: Getting process IDs of ctop
-  shell: ps -C ctop -o pid=
-  register: ctop_pids
-  failed_when: ctop_pids.rc > 1
+    - name: Configure netplan
+      template:
+        src: netplan.yaml.j2
+        dest: /etc/netplan/automation-config.yaml
+        owner: root
+        group: root
+        mode: 0644
+      become: yes
 
-- name: Printing the process IDs obtained
-  debug:
-    msg: "PIDS:{{ ctop_pids.stdout }}"
-  when: ctop_pids.rc == 0
-
-- name: Kill all ctop processes
-  shell: kill {{ item }}
-  when: ctop_pids.rc == 0
-  with_items: "{{ ctop_pids.stdout.split('\n') | list }}"
-
-# https://github.com/bcicen/ctop
-- name: "Install ctop (top command, for containers)"
-  shell: "wget -O /usr/local/bin/ctop https://github.com/bcicen/ctop/releases/download/v0.7.3/ctop-0.7.3-linux-amd64"
-  args:
-    warn: no
-  become: yes
-
-- name: "Set ctop file permissions"
-  shell: "chmod a+rx /usr/local/bin/ctop"
-  args:
-    warn: no
-  become: yes
+    - name: Apply netplan
+      shell: netplan apply
+      args:
+        warn: no
+      become: yes
 
 # Fixes the potential issue "Docker warning: IPv4 forwarding is disabled. Networking will not work"
 # https://stackoverflow.com/questions/41453263/docker-networking-disabled-warning-ipv4-forwarding-is-disabled-networking-wil
@@ -69,38 +99,3 @@
     reload: yes
   become: yes
   ignore_errors: yes
-
-- name: Download step-cli
-  get_url:
-    url: 'https://github.com/smallstep/cli/releases/download/v0.15.2/step-cli_0.15.2_amd64.deb'
-    dest: '~/step-cli.deb'
-    mode: 'u+rwx'
-
-- name: Install step-cli
-  apt:
-    deb: step-cli.deb
-  become: yes
-
-- name: Bootstrap the trust chain (installs Diesel-Net Root CA)
-  shell: >
-    step ca bootstrap --ca-url https://ca.diesel.net \
-    --fingerprint c4dfdfdece152139fe58280eebaa142ef25b0a19f0984ca5e5338d0d8522f7d8 \
-    --install -f
-  become: yes
-
-- name: Remove all other netplan configurations
-  shell: rm -rf /etc/netplan/*
-  become: yes
-
-- name: Configure netplan
-  template:
-    src: netplan.yaml.j2
-    dest: /etc/netplan/automation-config.yaml
-    owner: root
-    group: root
-    mode: 0644
-  become: yes
-
-- name: Apply netplan
-  shell: netplan apply
-  become: yes
