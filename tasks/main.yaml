@@ -2,11 +2,11 @@
   shell: timedatectl set-timezone {{ timezone }}
   become: yes
 
-- name: "Remove password expiry for root user"
+- name: Remove password expiry for root user
   shell: chage -I -1 -m 0 -M 99999 -E -1 root
   become: yes
 
-- name: "Install apt packages"
+- name: Install apt packages
   apt:
     name: "{{ apt_packages }}"
     state: present
@@ -14,50 +14,66 @@
     update_cache: yes
   become: yes
 
-- name: "Rebuild Trusted certificate store"
+- name: Rebuild Trusted certificate store
   command: update-ca-certificates --fresh
   become: yes
 
-# https://gist.github.com/tomdaley92/dd47cc1c26c58b2d2e5cf6ec56a2c4c7
-- name: "Install rsub (remote sublime)"
-  shell:  "wget -O /usr/local/bin/rsub https://raw.github.com/aurora/rmate/master/rmate"
-  args:
-    warn: no
-  become: yes
+- name: Install Remote Sublime (rsub)
+  block:
+    - name: "Download rmate (rsub)"
+      get_url:
+        url: https://raw.github.com/aurora/rmate/master/rmate
+        dest: /usr/local/bin/rsub
+      become: yes
 
-- name: "Set rsub file permissions"
-  shell: "chmod a+rx /usr/local/bin/rsub"
-  args:
-    warn: no
-  become: yes
+    - name: "Set rsub file permissions"
+      file:
+        path: /usr/local/bin/rsub
+        owner: root
+        group: root
+        mode: 'u=rwx,,g=rx,o=rx'
+      become: yes
 
-- name: Getting process IDs of ctop
-  shell: ps -C ctop -o pid=
-  register: ctop_pids
-  failed_when: ctop_pids.rc > 1
+- name: Install ctop (top command, for containers)
+  block:
+    - name: Get ctop PIDs
+      shell: ps -C ctop -o pid=
+      register: ctop_pids
+      failed_when: ctop_pids.rc > 1
+      become: yes
 
-- name: Printing the process IDs obtained
-  debug:
-    msg: "PIDS:{{ ctop_pids.stdout }}"
-  when: ctop_pids.rc == 0
+    - name: Print ctop PIDs
+      debug:
+        msg: "PIDS:{{ ctop_pids.stdout }}"
+      when: ctop_pids.rc == 0
+      become: yes
 
-- name: Kill all ctop processes
-  shell: kill {{ item }}
-  when: ctop_pids.rc == 0
-  with_items: "{{ ctop_pids.stdout.split('\n') | list }}"
+    - name: Kill ctop PIDs
+      shell: kill {{ item }}
+      when: ctop_pids.rc == 0
+      with_items: "{{ ctop_pids.stdout.split('\n') | list }}"
+      become: yes
 
-# https://github.com/bcicen/ctop
-- name: "Install ctop (top command, for containers)"
-  shell: "wget -O /usr/local/bin/ctop https://github.com/bcicen/ctop/releases/download/v0.7.3/ctop-0.7.3-linux-amd64"
-  args:
-    warn: no
-  become: yes
+    # https://github.com/bcicen/ctop
+    - name: Install ctop (top command, for containers)
+      shell: "wget -O /usr/local/bin/ctop https://github.com/bcicen/ctop/releases/download/v0.7.5/ctop-0.7.5-linux-amd64"
+      args:
+        warn: no
+      become: yes
 
-- name: "Set ctop file permissions"
-  shell: "chmod a+rx /usr/local/bin/ctop"
-  args:
-    warn: no
-  become: yes
+    - name: Download ctop
+      get_url:
+        url: https://github.com/bcicen/ctop/releases/download/v0.7.5/ctop-0.7.5-linux-amd64 
+        dest: /usr/local/bin/ctop
+      become: yes
+
+    - name: "Set ctop file permissions"
+      file:
+        path: /usr/local/bin/ctop
+        owner: root
+        group: root
+        mode: 'u=rwx,,g=rx,o=rx'
+      become: yes
 
 # Fixes the potential issue "Docker warning: IPv4 forwarding is disabled. Networking will not work"
 # https://stackoverflow.com/questions/41453263/docker-networking-disabled-warning-ipv4-forwarding-is-disabled-networking-wil
@@ -103,4 +119,6 @@
 
 - name: Apply netplan
   shell: netplan apply
+  args:
+    warn: no
   become: yes
