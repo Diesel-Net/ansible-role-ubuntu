@@ -34,40 +34,6 @@
         mode: 'u=rwx,,g=rx,o=rx'
       become: yes
 
-- name: Install ctop (top command, for containers)
-  block:
-    - name: Get ctop PIDs
-      shell: ps -C ctop -o pid=
-      register: ctop_pids
-      failed_when: ctop_pids.rc > 1
-      become: yes
-
-    - name: Print ctop PIDs
-      debug:
-        msg: "PIDS:{{ ctop_pids.stdout }}"
-      when: ctop_pids.rc == 0
-      become: yes
-
-    - name: Kill ctop PIDs
-      shell: kill {{ item }}
-      when: ctop_pids.rc == 0
-      with_items: "{{ ctop_pids.stdout.split('\n') | list }}"
-      become: yes
-
-    - name: Download ctop
-      get_url:
-        url: https://github.com/bcicen/ctop/releases/download/v0.7.5/ctop-0.7.5-linux-amd64 
-        dest: /usr/local/bin/ctop
-      become: yes
-
-    - name: "Set ctop file permissions"
-      file:
-        path: /usr/local/bin/ctop
-        owner: root
-        group: root
-        mode: 'u=rwx,,g=rx,o=rx'
-      become: yes
-
 - name: Install step (PKI/ACME client for private/internal CA)
   block:
     - name: Create temp dir
