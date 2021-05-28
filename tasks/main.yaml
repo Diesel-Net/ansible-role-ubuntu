@@ -88,14 +88,3 @@
       args:
         warn: no
       become: yes
-
-# Fixes the potential issue "Docker warning: IPv4 forwarding is disabled. Networking will not work"
-# https://stackoverflow.com/questions/41453263/docker-networking-disabled-warning-ipv4-forwarding-is-disabled-networking-wil
-- sysctl:
-    name: net.ipv4.ip_forward
-    value: '1'
-    sysctl_set: yes
-    state: present
-    reload: yes
-  become: yes
-  ignore_errors: yes
