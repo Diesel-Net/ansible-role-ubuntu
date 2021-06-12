@@ -1,0 +1,21 @@
+- block:
+    - name: Remove all other netplan configurations
+      shell: rm -rf /etc/netplan/*
+      args:
+        warn: no
+      become: yes
+
+    - name: Configure netplan
+      template:
+        src: netplan.yaml.j2
+        dest: /etc/netplan/automation-config.yaml
+        owner: root
+        group: root
+        mode: 0644
+      become: yes
+
+    - name: Apply netplan
+      shell: netplan apply
+      args:
+        warn: no
+      become: yes
