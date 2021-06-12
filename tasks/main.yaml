@@ -18,22 +18,6 @@
   command: update-ca-certificates --fresh
   become: yes
 
-- name: Install Remote Sublime (rsub)
-  block:
-    - name: "Download rmate (rsub)"
-      get_url:
-        url: https://raw.github.com/aurora/rmate/master/rmate
-        dest: /usr/local/bin/rsub
-      become: yes
-
-    - name: "Set rsub file permissions"
-      file:
-        path: /usr/local/bin/rsub
-        owner: root
-        group: root
-        mode: 'u=rwx,,g=rx,o=rx'
-      become: yes
-
 - name: Install step (PKI/ACME client for private/internal CA)
   block:
     - name: Create temp dir
