@@ -49,3 +49,23 @@
     --fingerprint c4dfdfdece152139fe58280eebaa142ef25b0a19f0984ca5e5338d0d8522f7d8 \
     --install -f
   become: yes
+
+- name: Ensure hostname is setup correctly
+  block:
+    - name: Render /etc/hostname
+      template:
+        src: hostname.j2
+        dest: /etc/hostname
+        owner: root
+        group: root
+        mode: 'u=rw,g=r,o=r'
+      become: yes
+
+    - name: Render /etc/hosts
+      template:
+        src: hosts.j2
+        dest: /etc/hosts
+        owner: root
+        group: root
+        mode: 'u=rw,g=r,o=r'
+      become: yes
