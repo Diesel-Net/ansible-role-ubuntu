@@ -28,7 +28,7 @@
 
     - name: Download step-cli
       get_url:
-        url: 'https://github.com/smallstep/cli/releases/download/v0.15.2/step-cli_0.15.2_amd64.deb'
+        url: 'https://github.com/smallstep/cli/releases/download/v{{ step_cli_version }}/step-cli_{{ step_cli_version }}_amd64.deb'
         dest: '{{ temp_dir.path }}/step-cli.deb'
         mode: 'u+rwx'
 
@@ -45,8 +45,8 @@
 
 - name: Bootstrap the trust chain (installs Diesel-Net Root CA)
   shell: >
-    step ca bootstrap --ca-url https://ca.diesel.net \
-    --fingerprint c4dfdfdece152139fe58280eebaa142ef25b0a19f0984ca5e5338d0d8522f7d8 \
+    step ca bootstrap --ca-url https://{{ ca_domain }} \
+    --fingerprint {{ ca_fingerprint }} \
     --install -f
   become: yes
 
