@@ -1,5 +1,4 @@
 # safe/sane defaults
-
 auto_reboots: no
 timezone: America/Los_Angeles
 
@@ -22,3 +21,18 @@ automation_user_ssh_public_key:
 ssh_known_hosts_command: "ssh-keyscan -T 10"
 ssh_known_hosts_file: "{{ lookup('env','HOME') + '/.ssh/known_hosts' }}"
 ssh_known_hosts: "{{ groups['all'] }}"
+
+apt_packages:
+  - qemu-guest-agent
+  - python3-pip
+  - python3-venv
+  - tree
+  - wget
+  - curl
+  - dnsutils
+  - ca-certificates
+  - mongodb-clients
+
+ca_fingerprint: c4dfdfdece152139fe58280eebaa142ef25b0a19f0984ca5e5338d0d8522f7d8
+ca_domain: ca.diesel.net
+step_cli_version: 0.15.2
