@@ -1,0 +1,9 @@
+# install "headless" drivers
+- name: sudo apt update && sudo apt install --no-install-recommends {{ nvidia_apt_packages }}
+  apt:
+    pkg: "{{ nvidia_apt_packages }}"
+    state: present
+    autoclean: yes
+    update_cache: yes
+    install_recommends: no
+  become: yes
