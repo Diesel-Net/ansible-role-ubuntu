@@ -11,20 +11,5 @@
 
 - debug:
     msg: 'reboot required: {{ reboot_required.stat.exists }}'
-
-- block:
-
-    - name: Reboot the system
-      shell: sleep 5 && reboot
-      become: yes
-      async: 10
-      poll: 0
-      when: reboot_required.stat.exists
-
-    - name: Wait for system to become reachable again
-      wait_for_connection:
-        delay: 60
-        timeout: 300
-      when: reboot_required.stat.exists
-
-  when: auto_reboots
+  changed_when: reboot_required.stat.exists and auto_reboots
+  notify: reboot system
