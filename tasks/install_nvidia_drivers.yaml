@@ -1,4 +1,5 @@
 # install "headless" drivers
+# secure boot must be disabled in UEFI
 - name: sudo apt update && sudo apt install --no-install-recommends {{ nvidia_apt_packages | join(' ') }}
   apt:
     pkg: "{{ nvidia_apt_packages }}"
