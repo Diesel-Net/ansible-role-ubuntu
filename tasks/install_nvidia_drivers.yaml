@@ -8,3 +8,4 @@
     update_cache: yes
     install_recommends: no
   become: yes
+  notify: reboot and wait
