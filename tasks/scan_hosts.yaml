@@ -1,6 +1,6 @@
 - name: For each host, scan for its ssh public key
   shell: "ssh-keyscan {{ item }},{{ lookup ('dig', item) }}"
-  with_items: "{{ ansible_hostname }}"
+  with_items: "{{ inventory_hostname }}"
   register: ssh_known_host_results
   ignore_errors: yes
   delegate_to: localhost
