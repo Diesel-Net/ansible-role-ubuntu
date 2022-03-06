@@ -12,4 +12,4 @@
   copy:
     content: "{{ apt_sources | regex_replace('https?:\\/\\/.+\\.ubuntu.com\\/ubuntu', apt_proxy_url, multiline=True, ignorecase=True) }}"
     dest: /etc/apt/sources.list
-    become: yes
+  become: yes
