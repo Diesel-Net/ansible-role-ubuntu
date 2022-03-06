@@ -6,6 +6,6 @@
 
 - name: 'overwrite sources.list with apt proxy configuration'
   copy:
-    content: "{{ lookup('file', playbook_dir+'/../sources.list') | regex_replace('(https?:\/\/\w+\.ubuntu.com\/ubuntu)', apt_proxy_url, multiline=True, ignorecase=True) }}"
+    content: "{{ lookup('file', playbook_dir+'/../sources.list') | regex_replace('https?:\/\/\w+\.ubuntu.com\/ubuntu', apt_proxy_url, multiline=True, ignorecase=True) }}"
     dest: /etc/apt/sources.list
     become: yes
