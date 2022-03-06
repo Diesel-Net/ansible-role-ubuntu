@@ -6,6 +6,9 @@
   shell: chage -I -1 -m 0 -M 99999 -E -1 root
   become: yes
 
+- include_tasks:
+    file: configure_apt_proxy.yaml
+
 - name: Install apt packages
   apt:
     name: "{{ apt_packages }}"
