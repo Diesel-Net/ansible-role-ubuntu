@@ -4,8 +4,12 @@
     dest: '{{ playbook_dir }}/../'
     flat: yes
 
+- name: 'set content of sources.list to a variable'
+  set_fact:
+    apt_sources: "{{ lookup('file', playbook_dir+'/../sources.list') }}"
+
 - name: 'overwrite sources.list with apt proxy configuration'
   copy:
-    content: "{{ lookup('file', playbook_dir+'/../sources.list') | regex_replace('https?:\\/\\/\w+\.ubuntu.com\\/ubuntu', apt_proxy_url, multiline=True, ignorecase=True) }}"
+    content: "{{ apt_sources | regex_replace('https?:\/\/\w+\.ubuntu.com\/ubuntu', apt_proxy_url, multiline=True, ignorecase=True) }}"
     dest: /etc/apt/sources.list
     become: yes
