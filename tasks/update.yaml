@@ -1,6 +1,10 @@
-- name: sudo apt update && sudo apt upgrade -y
+- name: sudo apt update
   apt:
     update-cache: yes
+  become: yes
+
+- name: sudo apt upgrade -y
+  apt:
     upgrade: safe
   become: yes
 
