@@ -1,4 +1,11 @@
-- copy:
-  content: "{{ lookup('file', '/etc/apt/sources.list') | regex_replace('(https?:\/\/\w+\.ubuntu.com\/ubuntu)', apt_proxy_url, multiline=True, ignorecase=True) }}"
-  dest: /etc/apt/sources.list
-  become: yes
+- name: 'fetch sources.list from remote'
+  fetch:
+    src: /etc/apt/sources.list
+    dest: '{{ playbook_dir }}/../'
+    flat: yes
+
+- name: 'overwrite sources.list with apt proxy configuration'
+  copy:
+    content: "{{ lookup('file', playbook_dir+'/../sources.list') | regex_replace('(https?:\/\/\w+\.ubuntu.com\/ubuntu)', apt_proxy_url, multiline=True, ignorecase=True) }}"
+    dest: /etc/apt/sources.list
+    become: yes
