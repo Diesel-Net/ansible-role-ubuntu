@@ -19,7 +19,7 @@
   loop_control:
     loop_var: scan
   loop: '{{ keyscan.results }}'
-  #when: keyscan.rc == '0'
+  #when: scan.rc == '0'
 
 
 - name: Add/update the public host key in the '{{ ssh_known_hosts_file }}'
@@ -33,4 +33,4 @@
   loop_control:
     loop_var: scan
   loop: '{{ keyscan.results }}'
-  when: keyscan.rc == '0'
+  when: scan.rc == '0'
