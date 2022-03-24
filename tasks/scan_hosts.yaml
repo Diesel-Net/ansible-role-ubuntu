@@ -3,27 +3,35 @@
   shell: "ssh-keyscan {{ item }},{{ lookup ('dig', item) }}"
   with_items: "{{ inventory_hostname }}"
   register: keyscan
+  ignore_errors: yes
+
+# TODO: If host unreachable, it could just be offline, check if key present in known-hosts and continue if so...
+
 
 
 - name: Remove the public host key in the '{{ ssh_known_hosts_file }}'
   delegate_to: localhost
   known_hosts:
-    name: "{{ scan.item }}"
+    name: "{{ result.item }}"
     state: "absent"
     path: "{{ ssh_known_hosts_file }}"
   loop_control:
-    loop_var: scan
+    loop_var: result
   loop: '{{ keyscan.results }}'
+  register: removal_attempt
+
+- debug:
+  msg: '{{ removal_attempt }}'
 
 
 - name: Add/update the public host key in the '{{ ssh_known_hosts_file }}'
   delegate_to: localhost
   known_hosts:
-    name: "{{ scan.item }}"
-    key: "{{ scan.stdout }}"
+    name: "{{ result.item }}"
+    key: "{{ result.stdout }}"
     state: "present"
     path: "{{ ssh_known_hosts_file }}"
   loop_control:
-    loop_var: scan
+    loop_var: result
   loop: '{{ keyscan.results }}'
   
