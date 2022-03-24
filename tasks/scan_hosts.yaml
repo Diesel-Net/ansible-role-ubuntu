@@ -1,20 +1,25 @@
 - name: For each host, scan for its ssh public key
   shell: "ssh-keyscan {{ item }},{{ lookup ('dig', item) }}"
   with_items: "{{ inventory_hostname }}"
-  register: ssh_known_host_results
+  register: keyscan
   ignore_errors: yes
   delegate_to: localhost
 
+# Goal: Only grab key if doesn't already exist?
 - debug:
-    msg: '{{ ssh_known_host_results }}'
+    msg: '{{ keyscan }}'
 
 - name: Remove the public host key in the '{{ ssh_known_hosts_file }}'
   known_hosts:
-    name: "{{ item.item }}"
+    name: "{{ scan.item }}"
     state: "absent"
     path: "{{ ssh_known_hosts_file }}"
-  with_items: "{{ ssh_known_host_results.results }}"
+  #with_items: "{{ keyscan.results }}"
   delegate_to: localhost
+  loop_control:
+    loop_var: scan
+  loop: '{{ keyscan.results }}'
+
 
 - name: Add/update the public host key in the '{{ ssh_known_hosts_file }}'
   known_hosts:
@@ -22,5 +27,9 @@
     key: "{{ item.stdout }}"
     state: "present"
     path: "{{ ssh_known_hosts_file }}"
-  with_items: "{{ ssh_known_host_results.results }}"
+  #with_items: "{{ keyscan.results }}"
   delegate_to: localhost
+  loop_control:
+    loop_var: scan
+  loop: '{{ keyscan.results }}'
+  when: keyscan.rc == '0'
