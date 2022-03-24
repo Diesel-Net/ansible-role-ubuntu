@@ -5,6 +5,9 @@
   ignore_errors: yes
   delegate_to: localhost
 
+- debug:
+    msg: '{{ ssh_known_host_results }}'
+
 - name: Remove the public host key in the '{{ ssh_known_hosts_file }}'
   known_hosts:
     name: "{{ item.item }}"
