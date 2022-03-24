@@ -6,20 +6,6 @@
   shell: chage -I -1 -m 0 -M 99999 -E -1 root
   become: yes
 
-- include_tasks: configure_apt_proxy.yaml
-
-- name: Install apt packages
-  apt:
-    name: "{{ apt_packages }}"
-    state: present
-    autoclean: yes
-    update_cache: yes
-  become: yes
-
-- name: Rebuild Trusted certificate store
-  command: update-ca-certificates --fresh
-  become: yes
-
 - name: Install step (PKI/ACME client for private/internal CA)
   block:
     - name: Create temp dir
@@ -50,4 +36,18 @@
     step ca bootstrap --ca-url https://{{ ca_domain }} \
     --fingerprint {{ ca_fingerprint }} \
     --install -f
+  become: yes
+
+- name: Rebuild Trusted certificate store
+  command: update-ca-certificates --fresh
+  become: yes
+
+- include_tasks: configure_apt_proxy.yaml
+
+- name: Install apt packages
+  apt:
+    name: "{{ apt_packages }}"
+    state: present
+    autoclean: yes
+    update_cache: yes
   become: yes
