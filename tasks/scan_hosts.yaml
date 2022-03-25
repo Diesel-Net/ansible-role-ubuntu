@@ -28,8 +28,9 @@
   lineinfile:
     path: '{{ lookup("env", "HOME") }}/.ssh/known_hosts'
     search_string: '{{ inventory_hostname }},{{ lookup ("dig", inventory_hostname) }}'
+    state: present
     line: EASTER_EGG
-  check_mode: yes
+  check_mode: no
   #register: search
   #failed_when: (search is changed) or (search is failed)
 
