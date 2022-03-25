@@ -28,10 +28,10 @@
   lineinfile:
     path: '{{ lookup("env", "HOME") }}/.ssh/known_hosts'
     search_string: '{{ item }},{{ lookup ("dig", item) }}'
-    line: write_disabled
+    line: EASTER_EGG
   check_mode: yes
   register: search
-  failed_when: (search is changed) or (search is failed)
+  #failed_when: (search is changed) or (search is failed)
 
 
 # - name:
