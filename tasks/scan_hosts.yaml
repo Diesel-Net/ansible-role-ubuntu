@@ -5,34 +5,25 @@
   ignore_errors: yes
   register: keyscan
 
-
-- debug:
-    msg: '{{ lookup("env", "HOME") }}/.ssh/known_hosts'
-
-- debug:
-    msg: '{{ inventory_hostname }}'
-
-- shell: cat '{{ lookup("env", "HOME") }}/.ssh/known_hosts'
+- name: 'print contents of {{ lookup("env", "HOME") }}/.ssh/known_hosts'
+  shell: cat '{{ lookup("env", "HOME") }}/.ssh/known_hosts'
   delegate_to: localhost
   become: yes
   register: cat
-
 - debug:
     msg: '{{ cat.stdout_lines }}'
 
-# TODO: If host unreachable, it could just be offline, check if key (IP only) is present in known-hosts and continue if so...
-- name: If host unreachable, check if at least A SINGLE key for the IP?
+
+- name: Check if {{ inventory_hostname }} still has the same IP
   delegate_to: localhost
-  #become: yes
-  #with_items: '{{ inventory_hostname }}'
-  lineinfile:
+  check_mode: yes
+  with_items: '{{ inventory_hostname }}'
+  replace:
     path: '{{ lookup("env", "HOME") }}/.ssh/known_hosts'
-    search_string: '{{ inventory_hostname }},{{ lookup ("dig", inventory_hostname) }}'
-    state: present
-    line: EASTER_EGG
-  check_mode: no
-  #register: search
-  #failed_when: (search is changed) or (search is failed)
+    regexp: '^({{ item | replace(".", "\.") }}),({{ lookup ("dig", item) | replace(".", "\.") }})\s.*'
+    replace: '{{ item }},{{ lookup ('dig', item) }}'
+  register: search
+  failed_when: (search is changed) or (search is failed)
 
 
 # - name:
