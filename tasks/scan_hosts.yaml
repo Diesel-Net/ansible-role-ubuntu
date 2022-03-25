@@ -10,6 +10,7 @@
     msg: '{{ lookup("env", "HOME") }}/.ssh/known_hosts'
 
 - shell: cat '{{ lookup("env", "HOME") }}/.ssh/known_hosts'
+  delegate_to: localhost
   become: yes
   register: cat
 
