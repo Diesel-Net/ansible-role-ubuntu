@@ -5,9 +5,21 @@
   ignore_errors: yes
   register: keyscan
 
+
+- debug:
+    msg: '{{ lookup("env", "HOME") }}/.ssh/known_hosts'
+
+- shell: cat '{{ lookup("env", "HOME") }}/.ssh/known_hosts'
+  become: yes
+  register: cat
+
+- debug:
+    msg: '{{ cat.stdout_lines }}'
+
 # TODO: If host unreachable, it could just be offline, check if key (IP only) is present in known-hosts and continue if so...
 - name: If host unreachable, check if at least A SINGLE key for the IP?
   delegate_to: localhost
+  become: yes
   with_items: '{{ inventory_hostname }}'
   lineinfile:
     path: '{{ lookup("env", "HOME") }}/.ssh/known_hosts'
