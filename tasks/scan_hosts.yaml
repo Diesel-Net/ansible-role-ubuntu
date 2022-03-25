@@ -11,8 +11,8 @@
 - name: If host unreachable, check if at least A SINGLE key for the IP?
   delegate_to: localhost
   lineinfile:
-    path: .ssh/known_hosts
-    search_string: '{{ lookup ('dig', inventory_hostname) }}'
+    path: '{{ lookup("ENV", "HOME") }}/.ssh/known_hosts'
+    search_string: '{{ lookup ("dig", inventory_hostname) }}'
     line: write_disabled
   check_mode: yes
   register: search
