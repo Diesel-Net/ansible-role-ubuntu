@@ -1,37 +1,55 @@
 - name: For each host, scan for its ssh public key
   delegate_to: localhost
-  shell: "ssh-keyscan {{ item }},{{ lookup ('dig', item) }}"
-  with_items: "{{ inventory_hostname }}"
-  register: keyscan
+  loop: '{{ inventory_hostname }}'
+  loop_control:
+    loop_var: host
+  shell: "ssh-keyscan {{ host }},{{ lookup ('dig', host) }}"
   ignore_errors: yes
+  register: keyscan
 
-# TODO: If host unreachable, it could just be offline, check if key present in known-hosts and continue if so...
+# TODO: If host unreachable, it could just be offline, check if key (IP only) is present in known-hosts and continue if so...
+- name: If host unreachable, check if at least A SINGLE key for the IP?
+  delegate_to: localhost
+  lineinfile:
+    path: .ssh/known_hosts
+    search_string: '{{ lookup ('dig', inventory_hostname) }}'
+    line: write_disabled
+  check_mode: yes
+  register: search
+  failed_when: (search is changed) or (search is failed)
 
 
+- name:
+  delegate_to: localhost
+  when: result.rc == '0'
+  loop: '{{ keyscan.results }}'
+  loop_control:
+    loop_var: result
+  
 
 - name: Remove the public host key in the '{{ ssh_known_hosts_file }}'
   delegate_to: localhost
+  when: result.rc == '0'
+  loop: '{{ keyscan.results }}'
+  loop_control:
+    loop_var: result
   known_hosts:
     name: "{{ result.item }}"
     state: "absent"
     path: "{{ ssh_known_hosts_file }}"
-  loop_control:
-    loop_var: result
-  loop: '{{ keyscan.results }}'
-  register: removal_attempt
-
-- debug:
-  msg: '{{ removal_attempt }}'
 
 
 - name: Add/update the public host key in the '{{ ssh_known_hosts_file }}'
   delegate_to: localhost
+  when: result.rc == '0'
+  loop: '{{ keyscan.results }}'
+  loop_control:
+    loop_var: result
   known_hosts:
     name: "{{ result.item }}"
     key: "{{ result.stdout }}"
     state: "present"
     path: "{{ ssh_known_hosts_file }}"
-  loop_control:
-    loop_var: result
-  loop: '{{ keyscan.results }}'
+  
+
   
