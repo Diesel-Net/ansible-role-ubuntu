@@ -20,8 +20,8 @@
   with_items: '{{ inventory_hostname }}'
   replace:
     path: '{{ lookup("env", "HOME") }}/.ssh/known_hosts'
-    regexp: 'break^({{ item | replace(".", "\.") }}),({{ lookup ("dig", item) | replace(".", "\.") }})(\s.*)'
-    replace: 'changed\1,\2\3'
+    regexp: '^({{ item | replace(".", "\.") }}),({{ lookup ("dig", item) | replace(".", "\.") }})(\s.*)'
+    replace: '\1,5\.5\.6\.4\3'
   register: search
   failed_when: (search is changed) or (search is failed)
 
