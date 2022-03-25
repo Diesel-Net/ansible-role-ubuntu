@@ -21,7 +21,7 @@
   replace:
     path: '{{ lookup("env", "HOME") }}/.ssh/known_hosts'
     regexp: 'break^({{ item | replace(".", "\.") }}),({{ lookup ("dig", item) | replace(".", "\.") }})(\s.*)'
-    replace: '\1,\2\3'
+    replace: 'changed\1,\2\3'
   register: search
   failed_when: (search is changed) or (search is failed)
 
