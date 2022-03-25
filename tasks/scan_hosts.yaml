@@ -1,9 +1,7 @@
 - name: For each host, scan for its ssh public key
   delegate_to: localhost
-  loop: '{{ inventory_hostname }}'
-  loop_control:
-    loop_var: host
-  shell: "ssh-keyscan {{ host }},{{ lookup ('dig', host) }}"
+  with_items: '{{ inventory_hostname }}'
+  shell: "ssh-keyscan {{ item }},{{ lookup ('dig', item) }}"
   ignore_errors: yes
   register: keyscan
 
