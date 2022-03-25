@@ -19,12 +19,12 @@
   failed_when: (search is changed) or (search is failed)
 
 
-- name:
-  delegate_to: localhost
-  when: result.rc == '0'
-  loop: '{{ keyscan.results }}'
-  loop_control:
-    loop_var: result
+# - name:
+#   delegate_to: localhost
+#   when: result.rc == '0'
+#   loop: '{{ keyscan.results }}'
+#   loop_control:
+#     loop_var: result
   
 
 - name: Remove the public host key in the '{{ ssh_known_hosts_file }}'
