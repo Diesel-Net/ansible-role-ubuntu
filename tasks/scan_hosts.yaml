@@ -23,14 +23,14 @@
 # TODO: If host unreachable, it could just be offline, check if key (IP only) is present in known-hosts and continue if so...
 - name: If host unreachable, check if at least A SINGLE key for the IP?
   delegate_to: localhost
-  become: yes
-  with_items: '{{ inventory_hostname }}'
+  #become: yes
+  #with_items: '{{ inventory_hostname }}'
   lineinfile:
     path: '{{ lookup("env", "HOME") }}/.ssh/known_hosts'
-    search_string: '{{ item }},{{ lookup ("dig", item) }}'
+    search_string: '{{ inventory_hostname }},{{ lookup ("dig", inventory_hostname) }}'
     line: EASTER_EGG
   check_mode: yes
-  register: search
+  #register: search
   #failed_when: (search is changed) or (search is failed)
 
 
