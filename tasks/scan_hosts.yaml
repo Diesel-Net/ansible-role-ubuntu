@@ -9,6 +9,9 @@
 - debug:
     msg: '{{ lookup("env", "HOME") }}/.ssh/known_hosts'
 
+- debug:
+    msg: '{{ inventory_hostname }}'
+
 - shell: cat '{{ lookup("env", "HOME") }}/.ssh/known_hosts'
   delegate_to: localhost
   become: yes
