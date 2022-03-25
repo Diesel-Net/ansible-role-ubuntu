@@ -8,9 +8,10 @@
 # TODO: If host unreachable, it could just be offline, check if key (IP only) is present in known-hosts and continue if so...
 - name: If host unreachable, check if at least A SINGLE key for the IP?
   delegate_to: localhost
+  with_items: '{{ inventory_hostname }}'
   lineinfile:
     path: '{{ lookup("env", "HOME") }}/.ssh/known_hosts'
-    search_string: '{{ lookup ("dig", inventory_hostname) }}'
+    search_string: '{{ item }},{{ lookup ("dig", item) }}'
     line: write_disabled
   check_mode: yes
   register: search
