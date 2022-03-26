@@ -6,7 +6,7 @@
   register: keyscan
 
 
-- shell: cat '{{ lookup("env", "HOME") }}/.ssh/known_hosts'
+- shell: 'cat {{ lookup("env", "HOME") }}/.ssh/known_hosts'
   delegate_to: localhost
   become: yes
   register: cat
@@ -15,7 +15,7 @@
     msg: '{{ cat.stdout_lines }}'
 
 
-- name: check if {{ inventory_hostname }} still has the same IP address
+- name: 'check if {{ inventory_hostname }} still has the same IP address'
   delegate_to: localhost
   when: keyscan is failed
   check_mode: yes
