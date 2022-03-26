@@ -1,4 +1,4 @@
-- name: For each host, scan for its ssh public key
+- name: for each host, scan for its ssh public key
   delegate_to: localhost
   with_items: '{{ inventory_hostname }}'
   shell: "ssh-keyscan {{ item }},{{ lookup ('dig', item) }}"
@@ -10,32 +10,26 @@
   delegate_to: localhost
   become: yes
   register: cat
-- name: 'print contents of {{ lookup("env", "HOME") }}/.ssh/known_hosts'
+- name: 'cat {{ lookup("env", "HOME") }}/.ssh/known_hosts'
   debug:
     msg: '{{ cat.stdout_lines }}'
 
 
-- name: Check if {{ inventory_hostname }} still has the same IP address
+- name: check if {{ inventory_hostname }} still has the same IP address
   delegate_to: localhost
   check_mode: yes
   with_items: '{{ inventory_hostname }}'
   replace:
     path: '{{ lookup("env", "HOME") }}/.ssh/known_hosts'
-    regexp: '^({{ item | replace(".", "\.") }}),({{ lookup ("dig", item) | replace(".", "\.") }})(\s.*)'
-    replace: '\1,\2\3'
+    regexp: '^({{ item | replace(".", "\.") }}),(\d+\.\d+\.\d+\.\d+)(\s.*)'
+    replace: '\1,{{ lookup ("dig", item) }}\3'
   register: search
   failed_when: (search is changed) or (search is failed)
-
-
-# - name:
-#   delegate_to: localhost
-#   when: result.rc == '0'
-#   loop: '{{ keyscan.results }}'
-#   loop_control:
-#     loop_var: result
+  fail:
+    msg: 'The IP address has changed.'
   
 
-- name: Remove the public host key in the '{{ ssh_known_hosts_file }}'
+- name: remove the public host key in the '{{ ssh_known_hosts_file }}'
   delegate_to: localhost
   when: result.rc == '0'
   loop: '{{ keyscan.results }}'
@@ -47,7 +41,7 @@
     path: "{{ ssh_known_hosts_file }}"
 
 
-- name: Add/update the public host key in the '{{ ssh_known_hosts_file }}'
+- name: add/update the public host key in the '{{ ssh_known_hosts_file }}'
   delegate_to: localhost
   when: result.rc == '0'
   loop: '{{ keyscan.results }}'
