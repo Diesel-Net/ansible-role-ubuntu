@@ -10,11 +10,17 @@
 - debug:
     msg: '{{ known_hosts_file }}'
 
-- name: load known_hosts_search
+- name: load host_regexp
   set_fact:
-    known_hosts_lazy_search: '{{ known_hosts_file | regex_search(^(inventory_hostname | replace(".", "\.")),(\d+\.\d+\.\d+\.\d+)(\s.*)) }}'
+    host_regexp: '^({{ inventory_hostname | replace(".", "\.") }}),(\d+\.\d+\.\d+\.\d+)(\s.*))'
 - debug:
-    msg: '{{ known_hosts_search }}'
+    msg: '{{ host_regexp }}'
+
+- name: load host_search
+  set_fact:
+    host_search: "{{ known_hosts_file | regex_search( host_regexp , '\\1,\\2' ) }}"
+- debug:
+    msg: '{{ host_search }}'
 
 
 - name: for each host, scan for its ssh public key
