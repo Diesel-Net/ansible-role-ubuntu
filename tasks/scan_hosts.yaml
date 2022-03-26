@@ -1,3 +1,22 @@
+- name: load known_hosts file
+  set_fact:
+    known_hosts_path: '{{ lookup("env", "HOME") }}/.ssh/known_hosts'
+    known_hosts_file: '{{ known_hosts_path.splitlines() }}'
+- debug:
+    msg: '{{ known_hosts_path }}'
+- debug:
+    msg: '{{ known_hosts_file }}'
+
+
+- shell: 'cat {{ known_hosts_path }}'
+  delegate_to: localhost
+  become: yes
+  register: cat
+- name: 'cat {{ known_hosts_path }}/.ssh/known_hosts'
+  debug:
+    msg: '{{ cat.stdout_lines }}'
+
+
 - name: for each host, scan for its ssh public key
   delegate_to: localhost
   with_items: '{{ inventory_hostname }}'
@@ -6,26 +25,17 @@
   register: keyscan
 
 
-- shell: 'cat {{ lookup("env", "HOME") }}/.ssh/known_hosts'
-  delegate_to: localhost
-  become: yes
-  register: cat
-- name: 'cat {{ lookup("env", "HOME") }}/.ssh/known_hosts'
-  debug:
-    msg: '{{ cat.stdout_lines }}'
-
-
 - name: 'check if {{ inventory_hostname }} still has the same IP address'
   delegate_to: localhost
   when: keyscan is failed
   check_mode: yes
   with_items: '{{ inventory_hostname }}'
   replace:
-    path: '{{ lookup("env", "HOME") }}/.ssh/known_hosts'
+    path: '{{ known_hosts_path }}'
     regexp: '^({{ item | replace(".", "\.") }}),(\d+\.\d+\.\d+\.\d+)(\s.*)'
     replace: '\1,{{ lookup ("dig", item) }}\3'
-  register: search
-  failed_when: (search is changed) or (search is failed)
+  register: replace
+  failed_when: (replace is changed) or (replace is failed)
   ignore_errors: yes
   
 
