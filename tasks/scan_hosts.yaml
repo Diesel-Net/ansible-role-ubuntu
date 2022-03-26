@@ -1,23 +1,14 @@
-- name: load known_hosts file
+- name: load known_hosts path
   set_fact:
     known_hosts_path: '{{ lookup("env", "HOME") }}/.ssh/known_hosts'
 - debug:
     msg: '{{ known_hosts_path }}'
 
-- name: load known_hosts path
+- name: load known_hosts file
   set_fact:
-    known_hosts_file: '{{ known_hosts_path.splitlines() }}'
+    known_hosts_file: '{{ lookup("file", known_hosts_path).splitlines() }}'
 - debug:
     msg: '{{ known_hosts_file }}'
-
-
-- shell: 'cat {{ known_hosts_path }}'
-  delegate_to: localhost
-  become: yes
-  register: cat
-- name: 'cat {{ known_hosts_path }}/.ssh/known_hosts'
-  debug:
-    msg: '{{ cat.stdout_lines }}'
 
 
 - name: for each host, scan for its ssh public key
