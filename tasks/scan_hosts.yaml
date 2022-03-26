@@ -1,14 +1,20 @@
-- name: load known_hosts path
+- name: load known_hosts_path
   set_fact:
     known_hosts_path: '{{ lookup("env", "HOME") }}/.ssh/known_hosts'
 - debug:
     msg: '{{ known_hosts_path }}'
 
-- name: load known_hosts file
+- name: load known_hosts_file
   set_fact:
-    known_hosts_file: '{{ lookup("file", known_hosts_path).splitlines() }}'
+    known_hosts_file: '{{ lookup("file", known_hosts_path) }}'
 - debug:
     msg: '{{ known_hosts_file }}'
+
+- name: load known_hosts_search
+  set_fact:
+    known_hosts_lazy_search: '{{ known_hosts_file | regex_search("^(inventory_hostname | replace(".", "\.")),(\d+\.\d+\.\d+\.\d+)(\s.*)) }}'
+- debug:
+    msg: '{{ known_hosts_search }}'
 
 
 - name: for each host, scan for its ssh public key
