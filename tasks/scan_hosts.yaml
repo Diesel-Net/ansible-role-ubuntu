@@ -1,10 +1,16 @@
+- name: load known_hosts_path
+  set_fact:
+    known_hosts_path: '{{ lookup("env", "HOME") }}/.ssh/known_hosts'
+- debug:
+    msg: '{{ known_hosts_path }}'
+
 - name: scan for hosts public keys
   delegate_to: localhost
   with_items: '{{ inventory_hostname }}'
   shell: "ssh-keyscan {{ item }},{{ lookup ('dig', item) }}"
   register: keyscan
 
-- name: remove the public host key in the '{{ ssh_known_hosts_file }}'
+- name: remove the public host key in the '{{ ssh_known_hosts_path }}'
   delegate_to: localhost
   loop: '{{ keyscan.results }}'
   loop_control:
@@ -14,7 +20,7 @@
     state: "absent"
     path: "{{ ssh_known_hosts_file }}"
 
-- name: add/update the public host key in the '{{ ssh_known_hosts_file }}'
+- name: add/update the public host key in the '{{ ssh_known_hosts_path }}'
   delegate_to: localhost
   loop: '{{ keyscan.results }}'
   loop_control:
@@ -24,3 +30,9 @@
     key: "{{ result.stdout }}"
     state: "present"
     path: "{{ ssh_known_hosts_file }}"
+
+- name: load known_hosts_file
+  set_fact:
+    known_hosts_file: '{{ lookup("file", known_hosts_path) }}'
+- debug:
+    msg: '{{ known_hosts_file }}'
