@@ -26,8 +26,8 @@
     replace: '\1,{{ lookup ("dig", item) }}\3'
   register: search
   failed_when: (search is changed) or (search is failed)
-  fail:
-    msg: 'The IP address has changed.'
+  # fail:
+  #   msg: 'The IP address has changed.'
   
 
 - name: remove the public host key in the '{{ ssh_known_hosts_file }}'
