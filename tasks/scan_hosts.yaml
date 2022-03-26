@@ -12,7 +12,7 @@
 
 - name: load known_hosts_search
   set_fact:
-    known_hosts_lazy_search: '{{ known_hosts_file | regex_search("^(inventory_hostname | replace(".", "\.")),(\d+\.\d+\.\d+\.\d+)(\s.*)) }}'
+    known_hosts_lazy_search: '{{ known_hosts_file | regex_search(^(inventory_hostname | replace(".", "\.")),(\d+\.\d+\.\d+\.\d+)(\s.*)) }}'
 - debug:
     msg: '{{ known_hosts_search }}'
 
