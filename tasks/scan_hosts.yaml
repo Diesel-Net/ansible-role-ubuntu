@@ -5,23 +5,24 @@
   ignore_errors: yes
   register: keyscan
 
-- name: 'print contents of {{ lookup("env", "HOME") }}/.ssh/known_hosts'
-  shell: cat '{{ lookup("env", "HOME") }}/.ssh/known_hosts'
+
+- shell: cat '{{ lookup("env", "HOME") }}/.ssh/known_hosts'
   delegate_to: localhost
   become: yes
   register: cat
-- debug:
+- name: 'print contents of {{ lookup("env", "HOME") }}/.ssh/known_hosts'
+  debug:
     msg: '{{ cat.stdout_lines }}'
 
 
-- name: Check if {{ inventory_hostname }} still has the same IP
+- name: Check if {{ inventory_hostname }} still has the same IP address
   delegate_to: localhost
   check_mode: yes
   with_items: '{{ inventory_hostname }}'
   replace:
     path: '{{ lookup("env", "HOME") }}/.ssh/known_hosts'
     regexp: '^({{ item | replace(".", "\.") }}),({{ lookup ("dig", item) | replace(".", "\.") }})(\s.*)'
-    replace: '\1,5\.5\.6\.4\3'
+    replace: '\1,\2\3'
   register: search
   failed_when: (search is changed) or (search is failed)
 
