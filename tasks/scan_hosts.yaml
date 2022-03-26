@@ -1,9 +1,12 @@
 - name: load known_hosts file
   set_fact:
     known_hosts_path: '{{ lookup("env", "HOME") }}/.ssh/known_hosts'
-    known_hosts_file: '{{ known_hosts_path.splitlines() }}'
 - debug:
     msg: '{{ known_hosts_path }}'
+
+- name: load known_hosts path
+  set_fact:
+    known_hosts_file: '{{ known_hosts_path.splitlines() }}'
 - debug:
     msg: '{{ known_hosts_file }}'
 
