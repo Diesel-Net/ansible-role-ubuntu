@@ -26,13 +26,12 @@
     replace: '\1,{{ lookup ("dig", item) }}\3'
   register: search
   failed_when: (search is changed) or (search is failed)
-  # fail:
-  #   msg: 'The IP address has changed.'
+  ignore_errors: yes
   
 
 - name: remove the public host key in the '{{ ssh_known_hosts_file }}'
   delegate_to: localhost
-  when: result.rc == '0'
+  when: keyscan
   loop: '{{ keyscan.results }}'
   loop_control:
     loop_var: result
@@ -44,7 +43,7 @@
 
 - name: add/update the public host key in the '{{ ssh_known_hosts_file }}'
   delegate_to: localhost
-  when: result.rc == '0'
+  when: keyscan
   loop: '{{ keyscan.results }}'
   loop_control:
     loop_var: result
