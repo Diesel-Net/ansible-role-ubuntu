@@ -17,6 +17,7 @@
 
 - name: check if {{ inventory_hostname }} still has the same IP address
   delegate_to: localhost
+  when: keyscan is failed
   check_mode: yes
   with_items: '{{ inventory_hostname }}'
   replace:
