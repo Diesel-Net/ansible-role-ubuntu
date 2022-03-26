@@ -12,7 +12,7 @@
 
 - name: load host_regexp
   set_fact:
-    host_regexp: '^({{ inventory_hostname }}),(\d+\.\d+\.\d+\.\d+)(\s.*)'
+    host_regexp: '^({{ inventory_hostname | replace(".", "\.") }}),(\d+\.\d+\.\d+\.\d+)(\s.*)$'
 - debug:
     msg: '{{ host_regexp }}'
 
