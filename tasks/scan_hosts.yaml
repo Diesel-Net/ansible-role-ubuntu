@@ -6,7 +6,7 @@
   ignore_errors: yes
 
 - debug:
-    with_items: '{{ keyscan.results }}'
+  with_items: '{{ keyscan.results }}'
     msg: '{{ item }}'
 
 - name: remove the public host key from known_hosts file
@@ -17,7 +17,7 @@
   #   loop_var: result
   with_items: '{{ keyscan.results }}'
   known_hosts:
-    name: "{{ item }}"
+    name: "{{ item.item }}"
     state: "absent"
     #path: "{{ ssh_known_hosts_file }}"
 
