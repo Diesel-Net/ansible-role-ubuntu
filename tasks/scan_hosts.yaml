@@ -10,7 +10,7 @@
 
 - name: remove the public host key from known_hosts file
   delegate_to: localhost
-  when: keyscan.failed is defined
+  when: result.rc == '0'
   loop: '{{ keyscan.results }}'
   loop_control:
     loop_var: result
@@ -21,7 +21,7 @@
 
 - name: add/update the public host key in known_hosts file
   delegate_to: localhos
-  when: keyscan.failed  is defined
+  when: result.rc == '0'
   loop: '{{ keyscan.results }}'
   loop_control:
     loop_var: result
