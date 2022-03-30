@@ -4,6 +4,10 @@
 - debug:
     msg: '{{ known_hosts_path }}'
 
+- name: delete known_hosts known_hosts_file
+  shell:  'rm -rf {{ known_hosts_path }}'
+  become: yes
+
 - name: scan for hosts public keys
   delegate_to: localhost
   with_items: '{{ inventory_hostname }}'
