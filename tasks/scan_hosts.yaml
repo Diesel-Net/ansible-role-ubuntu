@@ -6,7 +6,8 @@
   ignore_errors: yes
 
 - debug:
-    msg: '{{ keyscan }}'
+    with_items: '{{ keyscan.results }}'
+    msg: '{{ item }}'
 
 - name: remove the public host key from known_hosts file
   delegate_to: localhost
