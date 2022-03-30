@@ -5,6 +5,9 @@
   register: keyscan
   ignore_errors: yes
 
+- debug:
+    msg: '{{ keyscan }}'
+
 - name: remove the public host key in the '{{ ssh_known_hosts_path }}'
   delegate_to: localhost
   when: keyscan.rc == '0'
