@@ -10,21 +10,23 @@
 
 - name: remove the public host key from known_hosts file
   delegate_to: localhost
-  when: result.rc == '0'
-  loop: '{{ keyscan.results }}'
-  loop_control:
-    loop_var: result
+  when: item.rc == '0'
+  # loop: '{{ keyscan.results }}'
+  # loop_control:
+  #   loop_var: result
+  with_items: '{{ keyscan.results }}'
   known_hosts:
     name: "{{ result.item }}"
     state: "absent"
     path: "{{ ssh_known_hosts_file }}"
 
 - name: add/update the public host key in known_hosts file
-  delegate_to: localhos
-  when: result.rc == '0'
-  loop: '{{ keyscan.results }}'
-  loop_control:
-    loop_var: result
+  delegate_to: localhost
+  when: item.rc == '0'
+  # loop: '{{ keyscan.results }}'
+  # loop_control:
+  #   loop_var: result
+  with_items: '{{ keyscan.results }}'
   known_hosts:
     name: "{{ result.item }}"
     key: "{{ result.stdout }}"
