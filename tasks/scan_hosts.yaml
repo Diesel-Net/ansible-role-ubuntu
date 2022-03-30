@@ -16,9 +16,9 @@
   #   loop_var: result
   with_items: '{{ keyscan.results }}'
   known_hosts:
-    name: "{{ result.item }}"
+    name: "{{ item }}"
     state: "absent"
-    path: "{{ ssh_known_hosts_file }}"
+    #path: "{{ ssh_known_hosts_file }}"
 
 - name: add/update the public host key in known_hosts file
   delegate_to: localhost
@@ -31,4 +31,4 @@
     name: "{{ result.item }}"
     key: "{{ result.stdout }}"
     state: "present"
-    path: "{{ ssh_known_hosts_file }}"
+    #path: "{{ ssh_known_hosts_file }}"
