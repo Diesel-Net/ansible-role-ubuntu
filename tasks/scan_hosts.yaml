@@ -14,6 +14,7 @@
   with_items: '{{ inventory_hostname }}'
   shell: "ssh-keyscan {{ item }},{{ lookup ('dig', item) }}"
   register: keyscan
+  ignore_errors: yes
 
 - name: remove the public host key in the '{{ ssh_known_hosts_path }}'
   delegate_to: localhost
