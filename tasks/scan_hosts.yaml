@@ -8,9 +8,9 @@
 - debug:
     msg: '{{ keyscan }}'
 
-- name: remove the public host key in the '{{ ssh_known_hosts_path }}'
+- name: remove the public host key from known_hosts file
   delegate_to: localhost
-  when: keyscan.failed == 'false'
+  when: keyscan.failed is defined
   loop: '{{ keyscan.results }}'
   loop_control:
     loop_var: result
@@ -19,9 +19,9 @@
     state: "absent"
     path: "{{ ssh_known_hosts_file }}"
 
-- name: add/update the public host key in the '{{ ssh_known_hosts_path }}'
+- name: add/update the public host key in known_hosts file
   delegate_to: localhos
-  when: keyscan.failed == 'false'
+  when: keyscan.failed  is defined
   loop: '{{ keyscan.results }}'
   loop_control:
     loop_var: result
