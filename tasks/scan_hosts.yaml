@@ -1,23 +1,32 @@
-- name: For each host, scan for its ssh public key
+# failures from unreachable/offline hosts ignored
+- name: scan for hosts public keys
+  delegate_to: localhost
+  with_items: '{{ inventory_hostname }}'
   shell: "ssh-keyscan {{ item }},{{ lookup ('dig', item) }}"
-  with_items: "{{ inventory_hostname }}"
-  register: ssh_known_host_results
+  register: keyscan
   ignore_errors: yes
-  delegate_to: localhost
 
-- name: Remove the public host key in the '{{ ssh_known_hosts_file }}'
+- with_items: '{{ keyscan.results }}'
+  debug:
+    msg: '{{ item.rc }}'
+
+- name: remove the public host key from known_hosts file
+  delegate_to: localhost
+  loop: '{{ keyscan.results }}'
+  loop_control:
+    loop_var: result
+  when: result.rc == 0
   known_hosts:
-    name: "{{ item.item }}"
+    name: "{{ result.item }}"
     state: "absent"
-    path: "{{ ssh_known_hosts_file }}"
-  with_items: "{{ ssh_known_host_results.results }}"
-  delegate_to: localhost
 
-- name: Add/update the public host key in the '{{ ssh_known_hosts_file }}'
-  known_hosts:
-    name: "{{ item.item }}"
-    key: "{{ item.stdout }}"
-    state: "present"
-    path: "{{ ssh_known_hosts_file }}"
-  with_items: "{{ ssh_known_host_results.results }}"
+- name: add/update the public host key in known_hosts file
   delegate_to: localhost
+  loop: '{{ keyscan.results }}'
+  loop_control:
+    loop_var: result
+  when: result.rc == 0
+  known_hosts:
+    name: "{{ result.item }}"
+    key: "{{ result.stdout }}"
+    state: "present"
