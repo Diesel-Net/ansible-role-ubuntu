@@ -1,3 +1,4 @@
+# failures from unreachable/offline hosts ignored
 - name: scan for hosts public keys
   delegate_to: localhost
   with_items: '{{ inventory_hostname }}'
