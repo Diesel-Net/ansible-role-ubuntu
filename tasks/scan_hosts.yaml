@@ -7,7 +7,7 @@
 
 - with_items: '{{ keyscan.results }}'
   debug:
-    msg: '{{ item }}'
+    msg: '{{ item.rc }}'
   
     
 
