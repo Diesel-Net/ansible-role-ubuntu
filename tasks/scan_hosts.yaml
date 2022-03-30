@@ -10,7 +10,7 @@
 
 - name: remove the public host key in the '{{ ssh_known_hosts_path }}'
   delegate_to: localhost
-  when: keyscan
+  when: result.rc == '0'
   loop: '{{ keyscan.results }}'
   loop_control:
     loop_var: result
@@ -21,7 +21,7 @@
 
 - name: add/update the public host key in the '{{ ssh_known_hosts_path }}'
   delegate_to: localhos
-  when: keyscan
+  when: result.rc == '0'
   loop: '{{ keyscan.results }}'
   loop_control:
     loop_var: result
