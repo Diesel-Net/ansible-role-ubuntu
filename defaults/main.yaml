@@ -1,5 +1,5 @@
 # safe/sane defaults
-auto_reboots: yes
+auto_reboot: no
 timezone: America/Los_Angeles
 
 # ssh user vars

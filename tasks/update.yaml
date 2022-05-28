@@ -15,5 +15,5 @@
 
 - debug:
     msg: 'reboot required: {{ reboot_required.stat.exists }}'
-  changed_when: reboot_required.stat.exists and auto_reboots
+  changed_when: reboot_required.stat.exists and auto_reboot
   notify: reboot system
