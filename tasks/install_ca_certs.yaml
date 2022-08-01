@@ -1,11 +1,3 @@
-- name: Set the correct timezone
-  shell: timedatectl set-timezone {{ timezone }}
-  become: yes
-
-- name: Remove password expiry for root user
-  shell: chage -I -1 -m 0 -M 99999 -E -1 root
-  become: yes
-
 - name: Install step (PKI/ACME client for private/internal CA)
   block:
     - name: Create temp dir
@@ -40,14 +32,4 @@
 
 - name: Rebuild Trusted certificate store
   command: update-ca-certificates --fresh
-  become: yes
-
-- include_tasks: configure_apt_proxy.yaml
-
-- name: Install apt packages
-  apt:
-    name: "{{ apt_packages }}"
-    state: present
-    autoclean: yes
-    update_cache: yes
   become: yes

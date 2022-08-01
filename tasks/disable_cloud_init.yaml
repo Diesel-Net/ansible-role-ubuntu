@@ -1,5 +1,0 @@
-- name: Disable cloud-init
-  file:
-    path: /etc/cloud/cloud-init.disabled
-    state: touch
-  become: yes
