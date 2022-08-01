@@ -3,7 +3,7 @@
 
     - name: Render /etc/hostname
       template:
-        src: hostname.j2
+        src: hostname
         dest: /etc/hostname
         owner: root
         group: root
@@ -12,7 +12,7 @@
 
     - name: Render /etc/hosts
       template:
-        src: hosts.j2
+        src: hosts
         dest: /etc/hosts
         owner: root
         group: root

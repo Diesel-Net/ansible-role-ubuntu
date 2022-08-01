@@ -7,7 +7,7 @@
 
     - name: Configure netplan
       template:
-        src: netplan.yaml.j2
+        src: netplan.yaml
         dest: /etc/netplan/automation-config.yaml
         owner: root
         group: root
