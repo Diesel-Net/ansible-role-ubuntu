@@ -1,2 +1,2 @@
 # ansible-role-ubuntu
-Configuring fresh Ubuntu LTS Virtual Machines
+Configuring fresh Ubuntu Virtual Machines

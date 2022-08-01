@@ -1,6 +1,6 @@
 galaxy_info:
   author: Tom Daley
-  description: Configuring a fresh Ubuntu LTS machine
+  description: Configuring fresh Ubuntu Virtual Machines
 
   min_ansible_version: 2.10
   platforms:
