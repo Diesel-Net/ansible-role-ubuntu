@@ -1,6 +1,6 @@
 galaxy_info:
   author: Tom Daley
-  description: Configuring a freshly checked out Ubuntu VM from Verde
+  description: Configuring a fresh Ubuntu LTS machine
 
   min_ansible_version: 2.10
   platforms:
