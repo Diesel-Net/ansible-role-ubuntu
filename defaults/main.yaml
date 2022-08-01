@@ -30,7 +30,6 @@ apt_packages:
   - curl
   - dnsutils
   - ca-certificates
-  - mongodb-clients
   - nfs-common
 
 nvidia_driver_version: 470
