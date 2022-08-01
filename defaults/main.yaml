@@ -31,6 +31,7 @@ apt_packages:
   - dnsutils
   - ca-certificates
   - nfs-common
+  - iperf3
 
 nvidia_driver_version: 470
 nvidia_apt_packages:
