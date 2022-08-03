@@ -10,15 +10,15 @@
   debug:
     msg: '{{ item.rc }}'
 
-- name: remove the public host key from known_hosts file
-  delegate_to: localhost
-  loop: '{{ keyscan.results }}'
-  loop_control:
-    loop_var: result
-  when: result.rc == 0
-  known_hosts:
-    name: "{{ result.item }}"
-    state: "absent"
+# - name: remove the public host key from known_hosts file
+#   delegate_to: localhost
+#   loop: '{{ keyscan.results }}'
+#   loop_control:
+#     loop_var: result
+#   when: result.rc == 0
+#   known_hosts:
+#     name: "{{ result.item }}"
+#     state: "absent"
 
 - name: add/update the public host key in known_hosts file
   delegate_to: localhost
