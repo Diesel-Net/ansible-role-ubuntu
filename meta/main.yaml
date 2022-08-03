@@ -1,8 +1,8 @@
 galaxy_info:
   author: Tom Daley
-  description: Configuring a freshly checked out Ubuntu VM from Verde
+  description: Configuring fresh Ubuntu Virtual Machines
 
-  min_ansible_version: 2.10
+  min_ansible_version: 2.11
   platforms:
     - name: Ubuntu
       versions:

@@ -1,4 +1,6 @@
-# failures from unreachable/offline hosts ignored
+# IMPORTANT: to prevent race conditions be sure to set `serial: 1` at the playbook level!
+# https://github.com/ansible/ansible/issues/18878
+
 - name: scan for hosts public keys
   delegate_to: localhost
   with_items: '{{ inventory_hostname }}'

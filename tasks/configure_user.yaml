@@ -12,7 +12,7 @@
 
 - name: "Configure Bash"
   user:
-    name: automation
+    name: '{{ automation_user }}'
     shell: /bin/bash
   become: yes
 

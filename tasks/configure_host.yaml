@@ -1,0 +1,11 @@
+- name: Set the correct timezone
+  shell: timedatectl set-timezone {{ timezone }}
+  become: yes
+
+- name: Remove password expiry for root user
+  shell: chage -I -1 -m 0 -M 99999 -E -1 root
+  become: yes
+
+- include_tasks: configure_apt_proxy.yaml
+- include_tasks: install_apt_packages.yaml
+- include_tasks: install_ca_certs.yaml

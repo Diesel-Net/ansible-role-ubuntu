@@ -1,0 +1,2 @@
+- include_tasks: configure_user.yaml
+- include_tasks: configure_host.yaml

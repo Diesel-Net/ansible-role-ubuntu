@@ -30,8 +30,8 @@ apt_packages:
   - curl
   - dnsutils
   - ca-certificates
-  - mongodb-clients
   - nfs-common
+  - iperf3
 
 nvidia_driver_version: 470
 nvidia_apt_packages:

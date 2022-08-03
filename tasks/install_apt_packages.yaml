@@ -1,0 +1,7 @@
+- name: Install apt packages
+  apt:
+    name: "{{ apt_packages }}"
+    state: present
+    autoclean: yes
+    update_cache: yes
+  become: yes
