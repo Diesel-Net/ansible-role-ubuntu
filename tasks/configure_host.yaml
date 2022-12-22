@@ -6,6 +6,6 @@
   shell: chage -I -1 -m 0 -M 99999 -E -1 root
   become: yes
 
-- include_tasks: configure_apt_proxy.yaml
 - include_tasks: install_apt_packages.yaml
 - include_tasks: install_ca_certs.yaml
+- include_tasks: configure_apt_proxy.yaml
