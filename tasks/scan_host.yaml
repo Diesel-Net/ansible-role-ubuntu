@@ -1,34 +1,25 @@
-# IMPORTANT: to prevent race conditions be sure to set `serial: 1` at the playbook level!
-# https://github.com/ansible/ansible/issues/18878
-
-- name: scan for hosts public keys
+- name: scan for host's public keys
   delegate_to: localhost
-  with_items: '{{ inventory_hostname }}'
-  shell: "ssh-keyscan {{ item }},{{ lookup ('dig', item) }}"
+  throttle: 1
+  shell: "ssh-keyscan {{ inventory_hostname }}"
   register: keyscan
-  ignore_errors: yes
 
-- with_items: '{{ keyscan.results }}'
-  debug:
-    msg: '{{ item.rc }}'
+- debug:
+    msg: '{{ keyscan.stdout }}'
 
-- name: remove the public host key from known_hosts file
+- name: remove host's public keys from known_hosts file
   delegate_to: localhost
-  loop: '{{ keyscan.results }}'
-  loop_control:
-    loop_var: result
-  when: result.rc == 0
+  throttle: 1
   known_hosts:
-    name: "{{ result.item }}"
+    name: "{{ inventory_hostname }}"
     state: "absent"
+  when: keyscan.rc == 0
 
-- name: add/update the public host key in known_hosts file
+- name: add/update host's public keys in known_hosts file
   delegate_to: localhost
-  loop: '{{ keyscan.results }}'
-  loop_control:
-    loop_var: result
-  when: result.rc == 0
+  throttle: 1
   known_hosts:
-    name: "{{ result.item }}"
-    key: "{{ result.stdout }}"
+    name: "{{ inventory_hostname }}"
+    key: "{{ keyscan.stdout }}"
     state: "present"
+  when: keyscan.rc == 0
