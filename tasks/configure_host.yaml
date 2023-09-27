@@ -8,4 +8,3 @@
 
 - include_tasks: install_apt_packages.yaml
 - include_tasks: install_ca_certs.yaml
-- include_tasks: configure_apt_proxy.yaml
