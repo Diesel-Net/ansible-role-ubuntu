@@ -33,7 +33,7 @@ apt_packages:
   - nfs-common
   - iperf3
 
-nvidia_driver_version: 470
+nvidia_driver_version: 515
 nvidia_apt_packages:
   - nvidia-cuda-toolkit
   - nvidia-headless-{{ nvidia_driver_version }}
