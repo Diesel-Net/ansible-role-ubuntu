@@ -1,7 +1,8 @@
 
 - name: 'Add nexus apt proxy configuration.'
+  loop: '{{ apt_proxy_urls }}'
   copy:
     content: |
-      Acquire::https::proxy::ubuntu.com "{{ apt_proxy_url }}";
+      Acquire::https::proxy::ubuntu.com "{{ item }}";
     dest: /etc/apt/apt.conf.d/199-nexus-proxy.conf
   become: yes

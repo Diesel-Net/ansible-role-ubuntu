@@ -1,10 +1,9 @@
 # safe/sane defaults
-auto_reboot: no
 timezone: America/Los_Angeles
 
 # ssh user vars
 automation_user: automation
-automation_user_ssh_public_key: 
+automation_user_ssh_public_key:
   "ssh-rsa \
   AAAAB3NzaC1yc2EAAAADAQABAAACAQDqcgIeeDNXvweA32+8mOxtoy511/sl3Uf3L2I6UNDEYjKdH6a\
   z8Acw7J/29rQwulwktAtrGBo/8hLRj15mv5JUspozHEKEWb6biSqKkcwPHfL6JqtviUlMWxS4qBPMz5\
@@ -40,8 +39,5 @@ nvidia_apt_packages:
   - nvidia-utils-{{ nvidia_driver_version }}
   - libnvidia-encode-{{ nvidia_driver_version }}
 
-ca_fingerprint: c4dfdfdece152139fe58280eebaa142ef25b0a19f0984ca5e5338d0d8522f7d8
-ca_domain: ca.diesel.net
-step_cli_version: 0.15.2
-
-apt_proxy_url: https://nexus.diesel.net/repository/ubuntu-apt-proxy/
+apt_proxy_urls:
+  - https://nexus.diesel.net/repository/ubuntu-apt-proxy/
